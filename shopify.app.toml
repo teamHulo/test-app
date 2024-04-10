@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "1c5f1671ba147585b84851f9913252e3"
+name = "my-custom-app"
+handle = "my-custom-app-88"
+application_url = "https://tu-beautifully-fight-roll.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "aleksey-kyslytskyi.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_orders,write_content,write_orders,write_products"
+
+[auth]
+redirect_urls = [
+  "https://tu-beautifully-fight-roll.trycloudflare.com/auth/callback",
+  "https://tu-beautifully-fight-roll.trycloudflare.com/auth/shopify/callback",
+  "https://tu-beautifully-fight-roll.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false
