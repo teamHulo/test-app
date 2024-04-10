@@ -1,12 +1,12 @@
-name: Deploy Remix Application to HostIQ
+name: Deploy Remix App to HostIQ
 
 on:
   push:
     branches:
-      - main  # Замените на имя ветки, которую вы используете для развертывания
+      - main  # Замените на имя вашей основной ветки, если оно отличается
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'  # Укажите версию Node.js, требуемую для вашего проекта
+        node-version: '14'  # Укажите необходимую версию Node.js
 
     - name: Install dependencies
       run: npm install
@@ -26,25 +26,31 @@ jobs:
     - name: Archive production artifacts
       run: tar -czf release.tar.gz ./*  # Архивирует собранные файлы
 
+    # Отправка архива на сервер
     - name: Deploy to HostIQ server via SSH
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.HOSTIQ_HOST }}
-        username: ${{ secrets.HOSTIQ_USERNAME }}
-        password: ${{ secrets.HOSTIQ_PASSWORD }}
-        port: ${{ secrets.HOSTIQ_PORT }}
+        host: alenrouse.com
+        username: alenrous
+        password: 1sexD84nE9
+        port: 22
         source: "release.tar.gz"
         target: "/path/to/your/deployment/directory"
-      
-    - name: Execute remote SSH commands
+
+    # Выполнение команд на сервере через SSH для развертывания
+    - name: Remote SSH Commands
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOSTIQ_HOST }}
-        username: ${{ secrets.HOSTIQ_USERNAME }}
-        password: ${{ secrets.HOSTIQ_PASSWORD }}
-        port: ${{ secrets.HOSTIQ_PORT }}
+        host: alenrouse.com
+        username: alenrous
+        password: 1sexD84nE9
+        port: 22
         script: |
           cd /path/to/your/deployment/directory
           tar -xzf release.tar.gz  # Распаковывает архив
-          npm install --production  # Устанавливает зависимости для продакшена
-          pm2 restart all  # Перезапускает приложение через PM2 или любой другой менеджер процессов
+          # Удаление архива после распаковки, если необходимо
+          rm release.tar.gz
+          # Команды для запуска вашего приложения, например:
+          npm install --production
+          # Допустим, вы используете PM2 для управления процессом приложения
+          pm2 restart all  # или конкретный скрипт запуска/команду
