@@ -3,8 +3,7 @@ import db from "../db.server";
 
 
 const createArticle = async (id, value, admin, session) => {
-
-  console.log(admin);
+  
   const article = new admin.rest.resources.Article({session: session});
   article.blog_id = id;
   article.title = value ;
