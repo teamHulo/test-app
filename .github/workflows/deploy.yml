@@ -1,54 +1,47 @@
-name: Deploy Remix App to HostIQ
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
 
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches:
-      - main  # Замените на имя вашей основной ветки, если оно отличается
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  build_and_deploy:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Укажите необходимую версию Node.js
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build
-      run: npm run build  # Команда для сборки вашего приложения
-
-    - name: Archive production artifacts
-      run: tar -czf release.tar.gz ./*  # Архивирует собранные файлы
-
-    # Отправка архива на сервер
-    - name: Deploy to HostIQ server via SSH
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOSTIQ_HOST }}
-        username: ${{ secrets.HOSTIQ_USERNAME }}
-        password: ${{ secrets.HOSTIQ_PASSWORD }}
-        port: ${{ secrets.HOSTIQ_PORT }}
-        source: "release.tar.gz"
-        target: "/path/to/your/deployment/directory"
-
-    # Выполнение команд на сервере через SSH для развертывания
-    - name: Remote SSH Commands
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOSTIQ_HOST }}
-        username: ${{ secrets.HOSTIQ_USERNAME }}
-        password: ${{ secrets.HOSTIQ_PASSWORD }}
-        port: ${{ secrets.HOSTIQ_PORT }}
-        script: |
-          cd /path/to/your/deployment/directory
-          tar -xzf release.tar.gz  # Распаковывает архив
-          rm release.tar.gz  # Удаление архива после распаковки, если необходимо
-          # Команды для запуска вашего приложения
-          npm install --production
-          pm2 restart all  # или другая команда для запуска приложения
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+        run: |
+          npm install
+          npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: 'build/client'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
