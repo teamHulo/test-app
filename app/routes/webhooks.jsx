@@ -10,9 +10,6 @@ const createArticle = async (id, value, admin, session) => {
   await article.save({
     update: true,
   })
-  console.log('asdafasdfasdfasdfasdfasdfdsa'); 
-  console.log(article); 
-  
 }
 
 
